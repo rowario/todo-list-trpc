@@ -1,8 +1,10 @@
 import { AppProps } from "next/app";
 import Head from "next/head";
 import { MantineProvider } from "@mantine/core";
+import { SessionProvider } from "next-auth/react";
+import { trpc } from "@/utils/trpc";
 
-export default function App(props: AppProps) {
+function App(props: AppProps) {
     const { Component, pageProps } = props;
 
     return (
@@ -22,8 +24,12 @@ export default function App(props: AppProps) {
                     colorScheme: "dark",
                 }}
             >
-                <Component {...pageProps} />
+                <SessionProvider session={pageProps.session}>
+                    <Component {...pageProps} />
+                </SessionProvider>
             </MantineProvider>
         </>
     );
 }
+
+export default trpc.withTRPC(App);
