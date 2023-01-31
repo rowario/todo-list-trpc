@@ -6,10 +6,24 @@ import { trpc } from "@/utils/trpc";
 const TodoItem: FC<{
     todo: Todo;
 }> = ({ todo }) => {
+    const ctx = trpc.useContext();
     const { refetch } = trpc.todo.getAllByDay.useQuery({ dayId: todo.dayId });
     const { mutate: patchTodo } = trpc.todo.patch.useMutation({
-        onSettled() {
-            refetch();
+        onMutate({ id }) {
+            ctx.todo.getAllByDay.cancel();
+            ctx.todo.getAllByDay.setData({ dayId: todo.dayId }, (old) => {
+                if (old) {
+                    return old.map((x) => {
+                        if (id !== x.id) return x;
+                        return {
+                            ...x,
+                            completed: !x.completed,
+                        };
+                    });
+                }
+
+                return old;
+            });
         },
     });
     const { mutate: deleteTodo } = trpc.todo.delete.useMutation({

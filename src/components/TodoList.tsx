@@ -18,7 +18,7 @@ const TodoList: FC<{
         <>
             {todos &&
                 todos.length &&
-                todos.map((todo) => <TodoItem todo={todo} />)}
+                todos.map((todo) => <TodoItem key={todo.id} todo={todo} />)}
             {(!todos || !todos.length) && "У вас нет задач."}
         </>
     );
