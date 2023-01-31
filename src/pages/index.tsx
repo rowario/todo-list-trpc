@@ -1,5 +1,5 @@
 import CenteredLoader from "@/components/CenteredLoader";
-import TodoList from "@/components/TodoList";
+import UserDay from "@/components/UserDay";
 import {
     AppShell,
     Avatar,
@@ -71,7 +71,7 @@ export default function Index() {
                     >
                         {session && (
                             <Paper withBorder p="sm">
-                                <TodoList />
+                                <UserDay />
                             </Paper>
                         )}
                         {!session && <LoginScreen />}

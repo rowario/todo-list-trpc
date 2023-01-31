@@ -6,7 +6,7 @@ import { trpc } from "@/utils/trpc";
 const TodoItem: FC<{
     todo: Todo;
 }> = ({ todo }) => {
-    const { refetch } = trpc.day.getLast.useQuery();
+    const { refetch } = trpc.todo.getAllByDay.useQuery({ dayId: todo.dayId });
     const { mutate: patchTodo } = trpc.todo.patch.useMutation({
         onSettled() {
             refetch();

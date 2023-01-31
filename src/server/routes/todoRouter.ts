@@ -31,6 +31,9 @@ export const todoRouter = router({
                     dayId: input.dayId,
                     userId: ctx.session.user.id,
                 },
+                orderBy: {
+                    createdAt: "asc",
+                },
             });
         }),
     getById: userProcedure

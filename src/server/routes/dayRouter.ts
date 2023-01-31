@@ -19,13 +19,13 @@ export const dayRouter = router({
             orderBy: {
                 createdAt: "desc",
             },
-            include: {
-                todos: {
-					orderBy: {
-						createdAt: "asc"
-					}
-				}, 
-            },
+    //         include: {
+    //             todos: {
+				// 	orderBy: {
+				// 		createdAt: "asc"
+				// 	}
+				// }, 
+    //         },
         });
         // if (!day) {
         //     throw new TRPCError({ code: "NOT_FOUND" });

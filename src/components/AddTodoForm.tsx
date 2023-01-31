@@ -2,15 +2,17 @@ import { FC, useState } from "react";
 import { Button, Input, LoadingOverlay } from "@mantine/core";
 import { trpc } from "@/utils/trpc";
 
-const AddTodoForm: FC = () => {
+const AddTodoForm: FC<{
+    dayId: string;
+}> = ({ dayId }) => {
     const [title, setTitle] = useState("");
     const [isInvalid, setIsInvalid] = useState(false);
-    const { mutate: addTodo } = trpc.todo.create.useMutation({
+    const { mutate: addTodo, isLoading } = trpc.todo.create.useMutation({
         onSettled() {
             refetch();
         },
     });
-    const { data: day, refetch } = trpc.day.getLast.useQuery();
+    const { data: day, refetch } = trpc.todo.getAllByDay.useQuery({ dayId });
     if (!day) return null;
     return (
         <>
@@ -21,7 +23,7 @@ const AddTodoForm: FC = () => {
                     if (title.length) {
                         addTodo({
                             title,
-                            dayId: day.id,
+                            dayId,
                         });
                         setTitle("");
                     } else {
@@ -29,7 +31,7 @@ const AddTodoForm: FC = () => {
                     }
                 }}
             >
-                <LoadingOverlay visible={false} overlayBlur={2} />
+                <LoadingOverlay visible={isLoading} overlayBlur={2} />
                 <Input
                     invalid={isInvalid}
                     value={title}

@@ -1,40 +1,25 @@
 import { trpc } from "@/utils/trpc";
-import { Button } from "@mantine/core";
-import AddTodoForm from "./AddTodoForm";
+import { Day } from "@prisma/client";
+import { FC } from "react";
 import CenteredLoader from "./CenteredLoader";
 import TodoItem from "./TodoItem";
 
-const TodoList = () => {
-    const { data: day, isLoading, refetch } = trpc.day.getLast.useQuery();
-    const { mutate: createNewDay } = trpc.day.create.useMutation({
-        onSettled: () => {
-            refetch();
-        },
-    });
+const TodoList: FC<{
+    day: Day;
+}> = ({ day }) => {
+    const { data: todos, isLoading: isTodosLoading } =
+        trpc.todo.getAllByDay.useQuery({ dayId: day.id });
 
-    if (isLoading) {
+    if (isTodosLoading) {
         return <CenteredLoader />;
-    }
-
-    if (!day) {
-        return (
-            <>
-                Еще не создано ни одного дня.
-                <Button onClick={() => createNewDay()}>Создать день</Button>
-            </>
-        );
     }
 
     return (
         <>
-            Список задач ({day.date}):
-            <br />
-            {day.todos.length &&
-                day.todos.map((todo) => <TodoItem todo={todo} />)}
-            {!day.todos.length && "У вас нет задач."}
-            <div style={{ paddingTop: 4 }}>
-                <AddTodoForm />
-            </div>
+            {todos &&
+                todos.length &&
+                todos.map((todo) => <TodoItem todo={todo} />)}
+            {(!todos || !todos.length) && "У вас нет задач."}
         </>
     );
 };
