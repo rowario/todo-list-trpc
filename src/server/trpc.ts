@@ -32,7 +32,12 @@ const checkUserMiddleware = t.middleware(({ ctx, next }) => {
         throw new TRPCError({ code: "UNAUTHORIZED" });
     }
     return next({
-        ctx,
+        ctx: {
+            session: {
+                ...ctx.session,
+                user: ctx.session.user,
+            },
+        },
     });
 });
 

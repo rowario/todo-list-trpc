@@ -16,6 +16,7 @@ specifiers:
   '@types/node': 18.11.18
   '@types/react': 18.0.27
   '@types/react-dom': 18.0.10
+  dayjs: ^1.11.7
   next: 13.1.6
   next-auth: ^4.19.0
   prisma: ^4.9.0
@@ -38,6 +39,7 @@ dependencies:
   '@trpc/next': 10.9.0_5z6xuiz5uv65txozaje5ixjdkm
   '@trpc/react-query': 10.9.0_3y2fjou3ckwba5czteau6vvsje
   '@trpc/server': 10.9.0
+  dayjs: 1.11.7
   next: 13.1.6_biqbaboplfbrettd7655fr4n2y
   next-auth: 4.19.0_3vryta7zmbcsw4rrqf4axjqggm
   react: 18.2.0
@@ -827,6 +829,10 @@ packages:
 
   /csstype/3.1.1:
     resolution: {integrity: sha512-DJR/VvkAvSZW9bTouZue2sSxDwdTN92uHjqeKVm+0dAqdfNykRzQ95tay8aXMBAAPpUiq4Qcug2L7neoRh2Egw==}
+
+  /dayjs/1.11.7:
+    resolution: {integrity: sha512-+Yw9U6YO5TQohxLcIkrXBeY73WP3ejHWVvx8XCk3gxvQDCTEmS48ZrSZCKciI7Bhl/uCMyxYtE9UqRILmFphkQ==}
+    dev: false
 
   /dom-serializer/1.4.1:
     resolution: {integrity: sha512-VHwB3KfrcOOkelEG2ZOfxqLZdfkil8PtJi4P8N2MMXucZq2yLp75ClViUlOVwyoHEDjYU433Aq+5zWP61+RGag==}
