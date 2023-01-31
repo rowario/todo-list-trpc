@@ -11,6 +11,27 @@ export const dayRouter = router({
             },
         });
     }),
+    getLast: userProcedure.query(async ({ ctx }) => {
+        const day = await ctx.prisma.day.findFirst({
+            where: {
+                userId: ctx.session.user.id,
+            },
+            orderBy: {
+                createdAt: "desc",
+            },
+            include: {
+                todos: {
+					orderBy: {
+						createdAt: "asc"
+					}
+				}, 
+            },
+        });
+        // if (!day) {
+        //     throw new TRPCError({ code: "NOT_FOUND" });
+        // }
+        return day;
+    }),
     getByDate: userProcedure
         .input(
             z.object({

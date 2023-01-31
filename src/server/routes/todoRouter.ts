@@ -11,6 +11,28 @@ export const todoRouter = router({
             orderBy: {},
         });
     }),
+    getAllByCurrent: userProcedure.query(async ({ ctx }) => {
+        return ctx.prisma.todo.findMany({
+            where: {
+                userId: ctx.session.user.id,
+            },
+            orderBy: {},
+        });
+    }),
+    getAllByDay: userProcedure
+        .input(
+            z.object({
+                dayId: z.string(),
+            })
+        )
+        .query(async ({ ctx, input }) => {
+            return ctx.prisma.todo.findMany({
+                where: {
+                    dayId: input.dayId,
+                    userId: ctx.session.user.id,
+                },
+            });
+        }),
     getById: userProcedure
         .input(
             z.object({
@@ -71,5 +93,18 @@ export const todoRouter = router({
                 throw new TRPCError({ code: "BAD_REQUEST" });
             }
             return updated;
+        }),
+    delete: userProcedure
+        .input(
+            z.object({
+                id: z.string(),
+            })
+        )
+        .mutation(async ({ ctx, input }) => {
+            await ctx.prisma.todo.delete({
+                where: {
+                    id: input.id,
+                },
+            });
         }),
 });
