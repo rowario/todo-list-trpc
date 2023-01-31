@@ -7,17 +7,17 @@ import TodoItem from "./TodoItem";
 const TodoList: FC<{
     day: Day;
 }> = ({ day }) => {
-    const { data: todos, isLoading: isTodosLoading } =
-        trpc.todo.getAllByDay.useQuery({ dayId: day.id });
+    const { data: todos, isLoading } = trpc.todo.allByDay.useQuery({
+        dayId: day.id,
+    });
 
-    if (isTodosLoading) {
+    if (isLoading) {
         return <CenteredLoader />;
     }
 
     return (
         <>
             {todos &&
-                todos.length &&
                 todos.map((todo) => <TodoItem key={todo.id} todo={todo} />)}
             {(!todos || !todos.length) && "У вас нет задач."}
         </>

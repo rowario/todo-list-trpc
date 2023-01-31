@@ -6,29 +6,33 @@ import { trpc } from "@/utils/trpc";
 const TodoItem: FC<{
     todo: Todo;
 }> = ({ todo }) => {
-    const ctx = trpc.useContext();
-    const { refetch } = trpc.todo.getAllByDay.useQuery({ dayId: todo.dayId });
+    const utils = trpc.useContext();
     const { mutate: patchTodo } = trpc.todo.patch.useMutation({
-        onMutate({ id }) {
-            ctx.todo.getAllByDay.cancel();
-            ctx.todo.getAllByDay.setData({ dayId: todo.dayId }, (old) => {
-                if (old) {
-                    return old.map((x) => {
-                        if (id !== x.id) return x;
-                        return {
-                            ...x,
-                            completed: !x.completed,
-                        };
-                    });
-                }
-
-                return old;
-            });
+        async onMutate({ id }) {
+            await utils.todo.allByDay.cancel();
+            const previous = utils.todo.allByDay.getData({ dayId: todo.dayId });
+            if (!previous) {
+                return;
+            }
+            utils.todo.allByDay.setData(
+                { dayId: todo.dayId },
+                previous.map((x) =>
+                    x.id === id ? { ...x, completed: !x.completed } : x
+                )
+            );
         },
     });
     const { mutate: deleteTodo } = trpc.todo.delete.useMutation({
-        onSettled() {
-            refetch();
+        async onMutate({ id }) {
+            await utils.todo.allByDay.cancel();
+            const previous = utils.todo.allByDay.getData({ dayId: todo.dayId });
+            if (!previous) {
+                return;
+            }
+            utils.todo.allByDay.setData(
+                { dayId: todo.dayId },
+                previous.filter((x) => x.id !== id)
+            );
         },
     });
     return (

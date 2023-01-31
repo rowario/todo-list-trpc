@@ -7,13 +7,20 @@ const AddTodoForm: FC<{
 }> = ({ dayId }) => {
     const [title, setTitle] = useState("");
     const [isInvalid, setIsInvalid] = useState(false);
+    const utils = trpc.useContext();
     const { mutate: addTodo, isLoading } = trpc.todo.create.useMutation({
-        onSettled() {
-            refetch();
+        async onSettled(todo) {
+            await utils.todo.allByDay.cancel();
+            if (!todo) return;
+            const previous = utils.todo.allByDay.getData({ dayId });
+            console.log(previous);
+            if (!previous) {
+                utils.todo.allByDay.setData({ dayId }, [todo]);
+                return;
+            }
+            utils.todo.allByDay.setData({ dayId }, [...previous, todo]);
         },
     });
-    const { data: day, refetch } = trpc.todo.getAllByDay.useQuery({ dayId });
-    if (!day) return null;
     return (
         <>
             <form

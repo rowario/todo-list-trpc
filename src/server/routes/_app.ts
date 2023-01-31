@@ -1,10 +1,10 @@
 import { router } from "../trpc";
-import { dayRouter } from "./dayRouter";
-import { todoRouter } from "./todoRouter";
+import { day } from "./day";
+import { todo } from "./todo";
 
 export const appRouter = router({
-    day: dayRouter,
-    todo: todoRouter,
+    day,
+    todo,
 });
 
 export type AppRouter = typeof appRouter;

@@ -17,18 +17,21 @@ model User {
     email         String?   @unique
     emailVerified DateTime?
     image         String?
-    days          Day[]
+    days          Day[]     @relation("days")
     todos         Todo[]
     accounts      Account[]
     sessions      Session[]
+    currentDay    Day?      @relation("current")
 }
 
 model Day {
-    id     String @id @default(cuid())
-    date   String
-    user   User   @relation(fields: [userId], references: [id])
-    userId String
-    todos  Todo[]
+    id             String  @id @default(cuid())
+    date           String
+    user           User    @relation("days", fields: [userId], references: [id])
+    userId         String
+    todos          Todo[]
+    currentDayUser User?   @relation("current", fields: [currentUserId], references: [id])
+    currentUserId  String? @unique
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt

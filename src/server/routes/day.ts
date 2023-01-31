@@ -1,38 +1,29 @@
+import getCurrentDate from "@/utils/getCurrentDate";
 import { TRPCError } from "@trpc/server";
-import dayjs from "dayjs";
 import { z } from "zod";
 import { userProcedure, router } from "../trpc";
 
-export const dayRouter = router({
-    getAll: userProcedure.query(async ({ ctx }) => {
+export const day = router({
+    all: userProcedure.query(async ({ ctx }) => {
         return ctx.prisma.day.findMany({
             where: {
                 userId: ctx.session.user.id,
             },
         });
     }),
-    getLast: userProcedure.query(async ({ ctx }) => {
-        const day = await ctx.prisma.day.findFirst({
+    last: userProcedure.query(async ({ ctx }) => {
+        return ctx.prisma.day.findFirst({
             where: {
-                userId: ctx.session.user.id,
+                currentDayUser: {
+                    id: ctx.session.user.id,
+                },
             },
             orderBy: {
                 createdAt: "desc",
             },
-    //         include: {
-    //             todos: {
-				// 	orderBy: {
-				// 		createdAt: "asc"
-				// 	}
-				// }, 
-    //         },
         });
-        // if (!day) {
-        //     throw new TRPCError({ code: "NOT_FOUND" });
-        // }
-        return day;
     }),
-    getByDate: userProcedure
+    byDate: userProcedure
         .input(
             z.object({
                 date: z.string(),
@@ -50,7 +41,7 @@ export const dayRouter = router({
             }
             return day;
         }),
-    getById: userProcedure
+    byId: userProcedure
         .input(
             z.object({
                 id: z.string(),
@@ -69,7 +60,7 @@ export const dayRouter = router({
             return day;
         }),
     create: userProcedure.mutation(async ({ ctx }) => {
-        const date = dayjs().format("YYYY/MM/DD");
+        const date = getCurrentDate();
         const checked = await ctx.prisma.day.findFirst({
             where: {
                 userId: ctx.session.user.id,
@@ -83,6 +74,18 @@ export const dayRouter = router({
             data: {
                 date,
                 userId: ctx.session.user.id,
+            },
+        });
+        await ctx.prisma.user.update({
+            where: {
+                id: ctx.session.user.id,
+            },
+            data: {
+                currentDay: {
+                    connect: {
+                        id: created.id,
+                    },
+                },
             },
         });
         if (!created) {

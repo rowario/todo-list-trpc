@@ -2,24 +2,18 @@ import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { router, userProcedure } from "../trpc";
 
-export const todoRouter = router({
-    getAll: userProcedure.query(async ({ ctx }) => {
+export const todo = router({
+    all: userProcedure.query(async ({ ctx }) => {
         return ctx.prisma.todo.findMany({
             where: {
                 userId: ctx.session.user.id,
             },
-            orderBy: {},
-        });
-    }),
-    getAllByCurrent: userProcedure.query(async ({ ctx }) => {
-        return ctx.prisma.todo.findMany({
-            where: {
-                userId: ctx.session.user.id,
+            orderBy: {
+                createdAt: "asc",
             },
-            orderBy: {},
         });
     }),
-    getAllByDay: userProcedure
+    allByDay: userProcedure
         .input(
             z.object({
                 dayId: z.string(),
@@ -36,7 +30,7 @@ export const todoRouter = router({
                 },
             });
         }),
-    getById: userProcedure
+    byId: userProcedure
         .input(
             z.object({
                 id: z.string(),
