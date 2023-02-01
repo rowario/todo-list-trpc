@@ -20,6 +20,7 @@ export default function LoginScreen() {
                 Войти через Discord.
             </Button>
             <TelegramAuthButton
+                botId={process.env.NEXT_PUBLIC_BOT_ID}
                 onAuthCallback={(data) => {
                     console.log("test");
                     mutate(data);

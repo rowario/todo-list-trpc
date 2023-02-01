@@ -58,7 +58,6 @@ export const TelegramAuthButton: FC<{
     const didMount = useRef(false);
 
     const handleTelegramAuth = () => {
-        console.log(window);
         try {
             window.Telegram.Login.auth({ bot_id: botId }, (data) => {
                 if (!data) {

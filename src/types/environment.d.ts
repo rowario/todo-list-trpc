@@ -6,6 +6,7 @@ declare global {
             DISCORD_ID: string;
             DISCORD_SECRET: string;
             BOT_TOKEN: string;
+            NEXT_PUBLIC_BOT_ID: string;
         }
     }
 }
