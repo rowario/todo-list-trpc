@@ -1,20 +1,26 @@
 import { trpc } from "@/utils/trpc";
 import { LoadingOverlay, Paper, Textarea, Text } from "@mantine/core";
 import { Day } from "@prisma/client";
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 
 const NotesForm: FC<{
     day: Day;
 }> = ({ day }) => {
     const [notes, setNotes] = useState(day.notes);
-    const debounced = useDebounceValue("", notes, 1000);
+    const debounced = useDebounceValue(notes, 1000);
+    const utils = trpc.useContext();
     const { mutate: patchDay, isLoading: isPatchLoading } =
         trpc.day.patch.useMutation({
-            onSettled() {},
+            onSettled() {
+                utils.day.last.setData(undefined, {
+                    ...day,
+                    notes: debounced,
+                });
+            },
         });
 
     useEffect(() => {
-        if (day) {
+        if (day.notes !== debounced) {
             patchDay({
                 id: day.id,
                 notes: debounced,
@@ -36,8 +42,8 @@ const NotesForm: FC<{
     );
 };
 
-function useDebounceValue<T>(init: T, input: T, delay: number) {
-    const [value, setValue] = useState<T>(init);
+function useDebounceValue<T>(input: T, delay: number) {
+    const [value, setValue] = useState<T>(input);
     useEffect(() => {
         const timerId = setTimeout(() => {
             setValue(input);
