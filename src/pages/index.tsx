@@ -11,18 +11,9 @@ import {
     Text,
 } from "@mantine/core";
 import { signOut, useSession } from "next-auth/react";
-import { trpc } from "@/utils/trpc";
-import { useRouter } from "next/router";
 
 export default function Index() {
     let { data: session, status } = useSession();
-    const router = useRouter();
-
-    const { mutate } = trpc.auth.telegram.useMutation({
-        onSettled() {
-            router.reload();
-        },
-    });
 
     if (status === "loading") {
         return <CenteredLoader />;
@@ -69,13 +60,6 @@ export default function Index() {
                 }
             >
                 <Container>
-                    <Button
-                        onClick={() => {
-                            mutate();
-                        }}
-                    >
-                        TG
-                    </Button>
                     <Grid>
                         {session && <DayScreen />}
                         {!session && <LoginScreen />}

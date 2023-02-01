@@ -1,12 +1,12 @@
 import { router } from "../trpc";
-import { auth } from "./auth";
+import { telegram } from "./telegram";
 import { day } from "./day";
 import { todo } from "./todo";
 
 export const appRouter = router({
     day,
     todo,
-	auth
+    telegram,
 });
 
 export type AppRouter = typeof appRouter;

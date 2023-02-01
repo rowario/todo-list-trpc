@@ -6,7 +6,6 @@ declare global {
             DISCORD_ID: string;
             DISCORD_SECRET: string;
             BOT_TOKEN: string;
-            PORT: string;
         }
     }
 }

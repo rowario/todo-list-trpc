@@ -9,6 +9,7 @@ specifiers:
   '@next-auth/prisma-adapter': ^1.0.5
   '@prisma/client': ^4.9.0
   '@tanstack/react-query': ^4.24.4
+  '@telegram-auth/server': ^1.0.0
   '@trpc/client': ^10.9.0
   '@trpc/next': ^10.9.0
   '@trpc/react-query': ^10.9.0
@@ -35,6 +36,7 @@ dependencies:
   '@next-auth/prisma-adapter': 1.0.5_itdorc3kbufr4kntuocsjgxwwi
   '@prisma/client': 4.9.0_prisma@4.9.0
   '@tanstack/react-query': 4.24.4_biqbaboplfbrettd7655fr4n2y
+  '@telegram-auth/server': 1.0.0
   '@trpc/client': 10.9.0_@trpc+server@10.9.0
   '@trpc/next': 10.9.0_5z6xuiz5uv65txozaje5ixjdkm
   '@trpc/react-query': 10.9.0_3y2fjou3ckwba5czteau6vvsje
@@ -642,6 +644,10 @@ packages:
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       use-sync-external-store: 1.2.0_react@18.2.0
+    dev: false
+
+  /@telegram-auth/server/1.0.0:
+    resolution: {integrity: sha512-qoRO40avyefgjm7kX8MXyNRJrgUU0JEDIpNiUUKPZRjOd+GXCaH8nLGhR6XFpCtUI5po6UvM6nsMNIZLxWdgdQ==}
     dev: false
 
   /@trpc/client/10.9.0_@trpc+server@10.9.0:
