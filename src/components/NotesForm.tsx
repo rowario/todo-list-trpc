@@ -1,7 +1,7 @@
 import { trpc } from "@/utils/trpc";
 import { LoadingOverlay, Paper, Textarea, Text } from "@mantine/core";
 import { Day } from "@prisma/client";
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useEffect, useState } from "react";
 
 const NotesForm: FC<{
     day: Day;
