@@ -52,14 +52,15 @@ interface TelegramOptions {
 
 export const TelegramAuthButton: FC<{
     onAuthCallback: (data: TelegramResponseType) => void;
-}> = ({ onAuthCallback }) => {
+    botId: string;
+}> = ({ onAuthCallback, botId }) => {
     const buttonRef = createRef<HTMLDivElement>();
     const didMount = useRef(false);
 
     const handleTelegramAuth = () => {
         console.log(window);
         try {
-            window.Telegram.Login.auth({ bot_id: "BOT_ID" }, (data) => {
+            window.Telegram.Login.auth({ bot_id: botId }, (data) => {
                 if (!data) {
                     console.log("ERROR: something went wrong");
                 }
@@ -72,13 +73,16 @@ export const TelegramAuthButton: FC<{
 
     useEffect(() => {
         if (!didMount.current) {
-            didMount.current = true;
             const script = document.createElement("script");
+            didMount.current = true;
             script.setAttribute(
                 "src",
                 "https://telegram.org/js/telegram-widget.js?21"
             );
             buttonRef.current?.appendChild(script);
+            return () => {
+                buttonRef.current?.removeChild(script);
+            };
         }
     }, []);
 
