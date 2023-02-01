@@ -33,7 +33,7 @@ export const todo = router({
     byId: userProcedure
         .input(
             z.object({
-                id: z.string(),
+                id: z.string().cuid(),
             })
         )
         .query(async ({ ctx, input }) => {
@@ -71,7 +71,7 @@ export const todo = router({
     patch: userProcedure
         .input(
             z.object({
-                id: z.string(),
+                id: z.string().cuid(),
                 title: z.string(),
                 completed: z.boolean(),
             })
@@ -94,7 +94,7 @@ export const todo = router({
     delete: userProcedure
         .input(
             z.object({
-                id: z.string(),
+                id: z.string().cuid(),
             })
         )
         .mutation(async ({ ctx, input }) => {

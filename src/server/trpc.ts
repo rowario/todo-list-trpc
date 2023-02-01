@@ -1,17 +1,19 @@
 import { getServerAuthSession } from "@/pages/api/auth/[...nextauth]";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { CreateNextContextOptions } from "@trpc/server/adapters/next";
+import { NextApiResponse } from "next";
 import { Session } from "next-auth";
 import superjson from "superjson";
 import { prisma } from "./db";
 
 interface CreateContextOptions {
     session: Session | null;
+    res: NextApiResponse;
 }
 
 const createInnerContext = (opts: CreateContextOptions) => {
     return {
-        session: opts.session,
+        ...opts,
         prisma,
     };
 };
@@ -20,6 +22,7 @@ export const createTRPCConetxt = async (ctx: CreateNextContextOptions) => {
     const session = await getServerAuthSession(ctx);
     return createInnerContext({
         session,
+        res: ctx.res,
     });
 };
 

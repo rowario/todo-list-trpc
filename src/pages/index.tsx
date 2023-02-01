@@ -1,19 +1,28 @@
 import CenteredLoader from "@/components/CenteredLoader";
 import LoginScreen from "@/components/LoginScreen";
-import UserDay from "@/components/UserDay";
+import DayScreen from "@/components/DayScreen";
 import {
     AppShell,
     Avatar,
     Button,
+    Container,
     Grid,
     Header,
-    Paper,
     Text,
 } from "@mantine/core";
 import { signOut, useSession } from "next-auth/react";
+import { trpc } from "@/utils/trpc";
+import { useRouter } from "next/router";
 
 export default function Index() {
-    const { data: session, status } = useSession();
+    let { data: session, status } = useSession();
+    const router = useRouter();
+
+    const { mutate } = trpc.auth.telegram.useMutation({
+        onSettled() {
+            router.reload();
+        },
+    });
 
     if (status === "loading") {
         return <CenteredLoader />;
@@ -59,25 +68,19 @@ export default function Index() {
                     </Header>
                 }
             >
-                <Grid>
-                    <Grid.Col
-                        offsetLg={4}
-                        lg={4}
-                        xs={12}
-                        offset={0}
-                        offsetSm={2}
-                        sm={8}
-                        offsetMd={3}
-                        md={6}
+                <Container>
+                    <Button
+                        onClick={() => {
+                            mutate();
+                        }}
                     >
-                        {session && (
-                            <Paper withBorder p="sm">
-                                <UserDay />
-                            </Paper>
-                        )}
+                        TG
+                    </Button>
+                    <Grid>
+                        {session && <DayScreen />}
                         {!session && <LoginScreen />}
-                    </Grid.Col>
-                </Grid>
+                    </Grid>
+                </Container>
             </AppShell>
         </>
     );

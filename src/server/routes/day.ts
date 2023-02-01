@@ -44,7 +44,7 @@ export const day = router({
     byId: userProcedure
         .input(
             z.object({
-                id: z.string(),
+                id: z.string().cuid(),
             })
         )
         .query(async ({ input, ctx }) => {
@@ -93,4 +93,22 @@ export const day = router({
         }
         return created;
     }),
+    patch: userProcedure
+        .input(
+            z.object({
+                id: z.string().cuid(),
+                notes: z.string(),
+            })
+        )
+        .mutation(async ({ ctx, input }) => {
+            await ctx.prisma.day.update({
+                data: {
+                    notes: input.notes,
+                },
+                where: {
+                    id: input.id,
+                    userId: ctx.session.user.id,
+                },
+            });
+        }),
 });
