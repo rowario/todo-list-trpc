@@ -1,6 +1,11 @@
-import { Container, Grid, Paper } from "@mantine/core";
+import CenteredLoader from "@/components/CenteredLoader";
+import { TelegramAuthButton } from "@/components/TelegramAuthButton";
+import { trpc } from "@/utils/trpc";
+import { Avatar, Button, Container, Grid, Paper } from "@mantine/core";
+import { IconBrandDiscord, IconBrandTelegram } from "@tabler/icons-react";
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
+import { useRouter } from "next/router";
 import { FC } from "react";
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
@@ -18,7 +23,21 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
 };
 
+const providers = [
+    {
+        name: "Discord",
+        icon: <IconBrandDiscord size={24} />,
+    },
+    {
+        name: "Telegram",
+        icon: <IconBrandTelegram size={24} />,
+    },
+];
+
 const Settings: FC = () => {
+    const { data: user, isLoading } = trpc.user.me.useQuery();
+    if (isLoading) return <CenteredLoader />;
+    if (!user) return <>Ошибка загрузки</>;
     return (
         <Container>
             <Grid>
@@ -30,13 +49,99 @@ const Settings: FC = () => {
                     sm={12}
                     xs={12}
                 >
-                    <Paper withBorder p="sm">
-                        Test
+                    <Paper
+                        withBorder
+                        p="sm"
+                        sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 8,
+                        }}
+                    >
+                        Привязанные аккаунты:
+                        {providers.map((provider) => {
+                            const account = user.accounts.find(
+                                (x) =>
+                                    x.provider === provider.name.toLowerCase()
+                            );
+                            const isUsed = !!account;
+                            return (
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: 8,
+                                    }}
+                                >
+                                    <Avatar color="blue" radius="sm">
+                                        {provider.icon}
+                                    </Avatar>
+                                    <span
+                                        style={{
+                                            display: "flex",
+                                            gap: 8,
+                                            alignItems: "center",
+                                        }}
+                                    >
+                                        <span>{provider.name}</span>
+                                        {isUsed ? (
+                                            <>
+                                                ({account.providerAccountName})
+                                                <Button
+                                                    color="red"
+                                                    compact
+                                                    size="xs"
+                                                    disabled={
+                                                        user.accounts.length < 2
+                                                    }
+                                                >
+                                                    Отвязать
+                                                </Button>
+                                            </>
+                                        ) : (
+                                            <ConnectionButton
+                                                name={provider.name}
+                                            />
+                                        )}
+                                    </span>
+                                </div>
+                            );
+                        })}
                     </Paper>
                 </Grid.Col>
             </Grid>
         </Container>
     );
+};
+
+const ConnectionButton: FC<{ name: string }> = ({ name }) => {
+    const router = useRouter();
+    const { mutate: connectTelegram } = trpc.telegram.connect.useMutation({
+        onSuccess(response) {
+            if (response) router.reload();
+        },
+    });
+    switch (name) {
+        case "Telegram":
+            return (
+                <TelegramAuthButton
+                    botId={process.env.NEXT_PUBLIC_BOT_ID}
+                    onAuthCallback={connectTelegram}
+                />
+            );
+        case "Dicsord":
+            return (
+                <Button color="green" compact size="xs">
+                    Привязать
+                </Button>
+            );
+        default:
+            return (
+                <Button disabled color="green" compact size="xs">
+                    Нельзя привязать аккаунт
+                </Button>
+            );
+    }
 };
 
 export default Settings;
