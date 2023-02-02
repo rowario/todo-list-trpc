@@ -1,7 +1,7 @@
 import { getServerAuthSession } from "@/pages/api/auth/[...nextauth]";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { CreateNextContextOptions } from "@trpc/server/adapters/next";
-import { NextApiResponse } from "next";
+import { NextApiRequest, NextApiResponse } from "next";
 import { Session } from "next-auth";
 import superjson from "superjson";
 import { prisma } from "./db";
@@ -9,6 +9,7 @@ import { prisma } from "./db";
 interface CreateContextOptions {
     session: Session | null;
     res: NextApiResponse;
+    req: NextApiRequest;
 }
 
 const createInnerContext = (opts: CreateContextOptions) => {
@@ -23,6 +24,7 @@ export const createTRPCConetxt = async (ctx: CreateNextContextOptions) => {
     return createInnerContext({
         session,
         res: ctx.res,
+        req: ctx.req,
     });
 };
 
@@ -36,6 +38,7 @@ const checkUserMiddleware = t.middleware(({ ctx, next }) => {
     }
     return next({
         ctx: {
+            ...ctx,
             session: {
                 ...ctx.session,
                 user: ctx.session.user,

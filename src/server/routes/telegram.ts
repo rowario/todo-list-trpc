@@ -3,6 +3,7 @@ import { AuthDataValidator } from "@telegram-auth/server";
 import { z } from "zod";
 import { procedure, router } from "../trpc";
 import { randomBytes, randomUUID } from "crypto";
+import { TRPCError } from "@trpc/server";
 
 export const telegram = router({
     auth: procedure
@@ -22,10 +23,10 @@ export const telegram = router({
                 const validator = new AuthDataValidator({
                     botToken: process.env.BOT_TOKEN,
                 });
+
                 const telegramUser = await validator.validate(
                     new Map(Object.entries(input))
                 );
-                const adapter = PrismaAdapter(ctx.prisma);
 
                 let account = await ctx.prisma.account.findFirst({
                     where: {
@@ -35,47 +36,54 @@ export const telegram = router({
                 });
 
                 if (!account) {
-                    const user = await ctx.prisma.user.create({
-                        data: {
-                            name:
-                                telegramUser.username ||
-                                [
-                                    telegramUser.first_name,
-                                    telegramUser.last_name,
-                                ].join(" "),
-                            image: telegramUser.photo_url || null,
-                        },
-                    });
-                    account = await ctx.prisma.account.create({
-                        data: {
-                            type: "widget",
-                            provider: "telegram",
-                            providerAccountId: telegramUser.id.toString(),
-                            user: {
-                                connect: {
-                                    id: user.id,
+                    try {
+                        const user = await ctx.prisma.user.create({
+                            data: {
+                                name:
+                                    telegramUser.username ||
+                                    [
+                                        telegramUser.first_name,
+                                        telegramUser.last_name,
+                                    ].join(" "),
+                                image: telegramUser.photo_url || null,
+                            },
+                        });
+                        account = await ctx.prisma.account.create({
+                            data: {
+                                type: "widget",
+                                provider: "telegram",
+                                providerAccountId: telegramUser.id.toString(),
+                                user: {
+                                    connect: {
+                                        id: user.id,
+                                    },
                                 },
                             },
-                        },
-                    });
+                        });
+                    } catch (e) {
+                        throw new TRPCError({ code: "CONFLICT" });
+                    }
                 }
 
                 const date = new Date();
                 date.setDate(date.getDate() + 30);
 
+                const adapter = PrismaAdapter(ctx.prisma);
                 const session = await adapter.createSession({
                     sessionToken: generateSessionToken(),
                     userId: account.userId,
                     expires: date,
                 });
+
                 ctx.res.setHeader(
                     "set-cookie",
-                    `next-auth.session-token=${session.sessionToken}; path=/; samesite=lax; httponly;`
+                    `next-auth.session-token=${session.sessionToken}; path=/; samesite=lax; httponly; Expires=${date};`
                 );
 
                 return true;
             } catch (e) {
-                return false;
+                if (e instanceof TRPCError) throw e;
+                throw new TRPCError({ code: "UNAUTHORIZED" });
             }
         }),
 });

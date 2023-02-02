@@ -3,6 +3,7 @@ import Head from "next/head";
 import { MantineProvider } from "@mantine/core";
 import { SessionProvider } from "next-auth/react";
 import { trpc } from "@/utils/trpc";
+import { NotificationsProvider } from "@mantine/notifications";
 
 function App(props: AppProps) {
     const { Component, pageProps } = props;
@@ -24,9 +25,11 @@ function App(props: AppProps) {
                     colorScheme: "dark",
                 }}
             >
-                <SessionProvider session={pageProps.session}>
-                    <Component {...pageProps} />
-                </SessionProvider>
+                <NotificationsProvider>
+                    <SessionProvider session={pageProps.session}>
+                        <Component {...pageProps} />
+                    </SessionProvider>
+                </NotificationsProvider>
             </MantineProvider>
         </>
     );
