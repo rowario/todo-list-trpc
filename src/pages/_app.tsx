@@ -4,6 +4,8 @@ import { MantineProvider } from "@mantine/core";
 import { SessionProvider } from "next-auth/react";
 import { trpc } from "@/utils/trpc";
 import { NotificationsProvider } from "@mantine/notifications";
+import { AppShell } from "@mantine/core";
+import PageHeader from "@/components/PageHeader";
 
 function App(props: AppProps) {
     const { Component, pageProps } = props;
@@ -27,7 +29,9 @@ function App(props: AppProps) {
             >
                 <NotificationsProvider>
                     <SessionProvider session={pageProps.session}>
-                        <Component {...pageProps} />
+                        <AppShell header={<PageHeader />}>
+                            <Component {...pageProps} />
+                        </AppShell>
                     </SessionProvider>
                 </NotificationsProvider>
             </MantineProvider>
