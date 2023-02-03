@@ -4,7 +4,7 @@ import { trpc } from "@/utils/trpc";
 import { Avatar, Button, Container, Grid, Paper } from "@mantine/core";
 import { IconBrandDiscord, IconBrandTelegram } from "@tabler/icons-react";
 import { GetServerSideProps } from "next";
-import { getSession } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import { FC } from "react";
 
@@ -35,7 +35,14 @@ const providers = [
 ];
 
 const Settings: FC = () => {
-    const { data: user, isLoading } = trpc.user.me.useQuery();
+    const { data: user, isLoading, refetch } = trpc.user.me.useQuery();
+    const { mutate: removeAccount } = trpc.user.removeAccount.useMutation({
+        onSettled(result) {
+            if (result) {
+                refetch();
+            }
+        },
+    });
     if (isLoading) return <CenteredLoader />;
     if (!user) return <>Ошибка загрузки</>;
     return (
@@ -86,7 +93,6 @@ const Settings: FC = () => {
                                         <span>{provider.name}</span>
                                         {isUsed ? (
                                             <>
-                                                ({account.providerAccountName})
                                                 <Button
                                                     color="red"
                                                     compact
@@ -94,6 +100,11 @@ const Settings: FC = () => {
                                                     disabled={
                                                         user.accounts.length < 2
                                                     }
+                                                    onClick={() => {
+                                                        removeAccount({
+                                                            account: account.id,
+                                                        });
+                                                    }}
                                                 >
                                                     Отвязать
                                                 </Button>
@@ -125,13 +136,25 @@ const ConnectionButton: FC<{ name: string }> = ({ name }) => {
         case "Telegram":
             return (
                 <TelegramAuthButton
+					color="green"
+					compact
+                    size="xs"
                     botId={process.env.NEXT_PUBLIC_BOT_ID}
                     onAuthCallback={connectTelegram}
-                />
+                >
+					Привязать 
+                </TelegramAuthButton>
             );
-        case "Dicsord":
+        case "Discord":
             return (
-                <Button color="green" compact size="xs">
+                <Button
+                    onClick={() => {
+                        signIn("discord");
+                    }}
+                    color="green"
+                    compact
+                    size="xs"
+                >
                     Привязать
                 </Button>
             );

@@ -57,7 +57,6 @@ model Account {
     type                String
     provider            String
     providerAccountId   String
-    providerAccountName String  @default("")
     refresh_token       String? @db.Text
     access_token        String? @db.Text
     expires_at          Int?

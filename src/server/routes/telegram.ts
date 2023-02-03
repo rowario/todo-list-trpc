@@ -101,7 +101,6 @@ const getAccount = async (
                 type: "widget",
                 provider: "telegram",
                 providerAccountId: telegramUser.id.toString(),
-                providerAccountName: accountName,
                 user: {
                     connect: {
                         id: user.id,

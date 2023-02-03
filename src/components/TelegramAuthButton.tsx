@@ -1,4 +1,4 @@
-import { Button } from "@mantine/core";
+import { Button, DefaultMantineColor, MantineSize } from "@mantine/core";
 import { createRef, FC, useEffect, useRef } from "react";
 
 declare global {
@@ -53,7 +53,11 @@ interface TelegramOptions {
 export const TelegramAuthButton: FC<{
     onAuthCallback: (data: TelegramResponseType) => void;
     botId: string;
-}> = ({ onAuthCallback, botId }) => {
+    children: string;
+    color?: DefaultMantineColor;
+    compact?: boolean;
+    size?: MantineSize;
+}> = ({ onAuthCallback, botId, children, ...buttonProps }) => {
     const buttonRef = createRef<HTMLDivElement>();
     const didMount = useRef(false);
 
@@ -88,11 +92,12 @@ export const TelegramAuthButton: FC<{
     return (
         <div ref={buttonRef}>
             <Button
+                {...buttonProps}
                 onClick={() => {
                     handleTelegramAuth();
                 }}
             >
-                Войти через телеграм
+                {children}
             </Button>
         </div>
     );
