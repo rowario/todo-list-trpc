@@ -56,10 +56,20 @@ export const telegram = router({
                     expires: date,
                 });
 
-                ctx.res.setHeader(
-                    "set-cookie",
-                    `next-auth.session-token=${session.sessionToken}; path=/; samesite=lax; httponly; Expires=${date};`
-                );
+                const reqUrl = ctx.req.headers["referer"];
+                const url = new URL(reqUrl || "http://localhost");
+
+                if (url.protocol === "https") {
+                    ctx.res.setHeader(
+                        "set-cookie",
+                        `__Secure-next-auth.session-token=${session.sessionToken}; path=/; samesite=lax; httponly; secure=true; Expires=${date};`
+                    );
+                } else {
+                    ctx.res.setHeader(
+                        "set-cookie",
+                        `next-auth.session-token=${session.sessionToken}; path=/; samesite=lax; httponly; Expires=${date};`
+                    );
+                }
 
                 return true;
             } catch (e) {
