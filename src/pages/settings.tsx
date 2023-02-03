@@ -2,6 +2,7 @@ import CenteredLoader from "@/components/CenteredLoader";
 import { TelegramAuthButton } from "@/components/TelegramAuthButton";
 import { trpc } from "@/utils/trpc";
 import { Avatar, Button, Container, Grid, Paper } from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
 import { IconBrandDiscord, IconBrandTelegram } from "@tabler/icons-react";
 import { GetServerSideProps } from "next";
 import { getSession, signIn } from "next-auth/react";
@@ -74,6 +75,7 @@ const Settings: FC = () => {
                             const isUsed = !!account;
                             return (
                                 <div
+                                    key={provider.name}
                                     style={{
                                         display: "flex",
                                         alignItems: "center",
@@ -128,6 +130,26 @@ const Settings: FC = () => {
 const ConnectionButton: FC<{ name: string }> = ({ name }) => {
     const router = useRouter();
     const { mutate: connectTelegram } = trpc.telegram.connect.useMutation({
+		onError(err) {
+			if (err.data) {
+				switch (err.data.code) {
+					case "CONFLICT": 
+						showNotification({
+							color: "red",
+							title: "Ошибка авторизации.",
+							message: "Этот Telegram аккаунт уже привязан к другому аккаунту."
+						});
+					break;
+					default:
+						showNotification({
+							color: "red",
+							title: "Ошибка авторизации.",
+							message: "Не удалось войти в аккаунт."
+						});
+					break;
+				}
+			}
+		},
         onSuccess(response) {
             if (response) router.reload();
         },
@@ -136,13 +158,13 @@ const ConnectionButton: FC<{ name: string }> = ({ name }) => {
         case "Telegram":
             return (
                 <TelegramAuthButton
-					color="green"
-					compact
+                    color="green"
+                    compact
                     size="xs"
                     botId={process.env.NEXT_PUBLIC_BOT_ID}
                     onAuthCallback={connectTelegram}
                 >
-					Привязать 
+                    Привязать
                 </TelegramAuthButton>
             );
         case "Discord":

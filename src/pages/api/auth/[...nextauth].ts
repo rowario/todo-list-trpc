@@ -20,6 +20,21 @@ export const authAdapter = PrismaAdapter(prisma);
 
 export const authOptions: NextAuthOptions = {
     callbacks: {
+        async signIn({ account }) {
+            if (account) {
+                const existAccount = await prisma.account.findFirst({
+                    where: {
+                        providerAccountId: account.providerAccountId,
+                    },
+                });
+
+                console.log(existAccount);
+
+                if (existAccount) return false;
+            }
+
+            return true;
+        },
         session({ session, user }) {
             if (session.user) {
                 session.user.id = user.id;
@@ -34,6 +49,9 @@ export const authOptions: NextAuthOptions = {
             clientSecret: process.env.DISCORD_SECRET,
         }),
     ],
+    pages: {
+        error: "/error",
+    },
 };
 
 export default NextAuth(authOptions);

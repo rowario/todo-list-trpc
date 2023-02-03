@@ -40,7 +40,9 @@ export default function LoginScreen() {
             <TelegramAuthButton
                 botId={process.env.NEXT_PUBLIC_BOT_ID}
                 onAuthCallback={mutate}
-            >Войти через Telegram.</TelegramAuthButton>
+            >
+                Войти через Telegram.
+            </TelegramAuthButton>
         </div>
     );
 }
