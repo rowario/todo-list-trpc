@@ -8,7 +8,11 @@ export default function Index() {
     let { data: session, status } = useSession();
 
     if (status === "loading") {
-        return <CenteredLoader />;
+        return (
+            <Container>
+                <CenteredLoader />
+            </Container>
+        );
     }
 
     return (

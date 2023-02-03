@@ -24,13 +24,18 @@ const DayScreen = () => {
 
     if (!day) {
         return (
-            <>
-                Еще не создано ни одного дня.
-                <br />
-                <Button fullWidth onClick={() => createNewDay()}>
-                    Создать день
-                </Button>
-            </>
+            <div
+                style={{
+                    width: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyItems: "center",
+                }}
+            >
+                <span>Еще не создано ни одного дня.</span>
+                <Button onClick={() => createNewDay()}>Создать день</Button>
+            </div>
         );
     }
 

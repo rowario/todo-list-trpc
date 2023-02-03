@@ -6,7 +6,7 @@ import { randomBytes, randomUUID } from "crypto";
 import { TRPCError } from "@trpc/server";
 import { PrismaClient, User } from "@prisma/client";
 
-const telegramAuthInput = z.object({
+const telegramAuthResponse = z.object({
     auth_date: z.number(),
     first_name: z.string(),
     last_name: z.string().optional(),
@@ -16,9 +16,11 @@ const telegramAuthInput = z.object({
     username: z.string().optional(),
 });
 
+export type TelegramAuthRepsonse = z.infer<typeof telegramAuthResponse>;
+
 export const telegram = router({
     connect: userProcedure
-        .input(telegramAuthInput)
+        .input(telegramAuthResponse)
         .mutation(async ({ ctx, input }) => {
             try {
                 const telegramUser = await getTelegramValidatedUser(input);
@@ -38,7 +40,7 @@ export const telegram = router({
             }
         }),
     auth: procedure
-        .input(telegramAuthInput)
+        .input(telegramAuthResponse)
         .mutation(async ({ ctx, input }) => {
             try {
                 const telegramUser = await getTelegramValidatedUser(input);
@@ -116,7 +118,7 @@ const getAccount = async (
 };
 
 const getTelegramValidatedUser = async (
-    input: z.infer<typeof telegramAuthInput>
+    input: z.infer<typeof telegramAuthResponse>
 ) => {
     try {
         const validator = new AuthDataValidator({

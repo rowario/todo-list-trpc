@@ -1,6 +1,7 @@
 import { trpc } from "@/utils/trpc";
 import { Button } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
+import { IconBrandDiscord, IconBrandTelegram } from "@tabler/icons-react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import { TelegramAuthButton } from "./TelegramAuthButton";
@@ -31,18 +32,37 @@ export default function LoginScreen() {
         },
     });
     return (
-        <div style={{ textAlign: "center", width: "100%" }}>
-            <span>Вы не вошли в свой аккаунт.</span>
-            <br />
-            <Button onClick={() => signIn("discord")}>
-                Войти через Discord.
-            </Button>
-            <TelegramAuthButton
-                botId={process.env.NEXT_PUBLIC_BOT_ID}
-                onAuthCallback={mutate}
+        <div
+            style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                width: "100%",
+                gap: 8,
+            }}
+        >
+            <span>Вы не вошли в свой аккаунт</span>
+            <div
+                style={{
+                    display: "flex",
+                    gap: 8,
+                }}
             >
-                Войти через Telegram.
-            </TelegramAuthButton>
+                <Button
+                    color="indigo"
+                    onClick={() => signIn("discord")}
+                    leftIcon={<IconBrandDiscord />}
+                >
+                    Войти Discord
+                </Button>
+                <TelegramAuthButton
+                    botId={process.env.NEXT_PUBLIC_BOT_ID}
+                    onAuthCallback={mutate}
+                    leftIcon={<IconBrandTelegram />}
+                >
+                    Войти Telegram
+                </TelegramAuthButton>
+            </div>
         </div>
     );
 }

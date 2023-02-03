@@ -38,6 +38,28 @@ const providers = [
 const Settings: FC = () => {
     const { data: user, isLoading, refetch } = trpc.user.me.useQuery();
     const { mutate: removeAccount } = trpc.user.removeAccount.useMutation({
+        onError(error) {
+            if (error.data) {
+                switch (error.data.code) {
+                    case "NOT_FOUND":
+                        showNotification({
+                            color: "red",
+                            title: "Ошибка авторизации.",
+                            message:
+                                "Не удалось найти этот аккаунт, возможно он уже был отвязан.",
+                        });
+                        break;
+                    default:
+                        showNotification({
+                            color: "red",
+                            title: "Ошибка авторизации.",
+                            message:
+                                "Не удалось обработать запрос, обновите страницу и попробуйте снова.",
+                        });
+                        break;
+                }
+            }
+        },
         onSettled(result) {
             if (result) {
                 refetch();
@@ -130,26 +152,27 @@ const Settings: FC = () => {
 const ConnectionButton: FC<{ name: string }> = ({ name }) => {
     const router = useRouter();
     const { mutate: connectTelegram } = trpc.telegram.connect.useMutation({
-		onError(err) {
-			if (err.data) {
-				switch (err.data.code) {
-					case "CONFLICT": 
-						showNotification({
-							color: "red",
-							title: "Ошибка авторизации.",
-							message: "Этот Telegram аккаунт уже привязан к другому аккаунту."
-						});
-					break;
-					default:
-						showNotification({
-							color: "red",
-							title: "Ошибка авторизации.",
-							message: "Не удалось войти в аккаунт."
-						});
-					break;
-				}
-			}
-		},
+        onError(error) {
+            if (error.data) {
+                switch (error.data.code) {
+                    case "CONFLICT":
+                        showNotification({
+                            color: "red",
+                            title: "Ошибка авторизации.",
+                            message:
+                                "Этот Telegram аккаунт уже привязан к другому аккаунту.",
+                        });
+                        break;
+                    default:
+                        showNotification({
+                            color: "red",
+                            title: "Ошибка авторизации.",
+                            message: "Не удалось войти в аккаунт.",
+                        });
+                        break;
+                }
+            }
+        },
         onSuccess(response) {
             if (response) router.reload();
         },
