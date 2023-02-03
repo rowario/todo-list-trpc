@@ -30,6 +30,7 @@ const ErrorPage: FC = () => {
 const errors = new Map<string, string>([
     ["Configuration", "Ошибка на сервере, попробуйте позднее."],
     ["AccessDenied", "Этот аккаунт не может быть привязан дважды."],
+    ["OAuthAccountNotLinked", "Этот аккаунт не может быть привязан дважды."],
     ["Verification", "Ссылка для авторизации истекла."], // used only with email auth
     ["Default", "Неопознонная ошибка авторизации."],
 ]);

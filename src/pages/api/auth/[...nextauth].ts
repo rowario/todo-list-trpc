@@ -20,7 +20,7 @@ export const authAdapter = PrismaAdapter(prisma);
 
 export const authOptions: NextAuthOptions = {
     callbacks: {
-        async signIn({ account }) {
+        async signIn({ user, account }) {
             if (account) {
                 const existAccount = await prisma.account.findFirst({
                     where: {
@@ -28,9 +28,15 @@ export const authOptions: NextAuthOptions = {
                     },
                 });
 
-                console.log(existAccount);
+                if (existAccount) {
+                    const checkOldUser = await prisma.user.findFirst({
+                        where: {
+                            id: user.id,
+                        },
+                    });
 
-                if (existAccount) return false;
+                    if (!checkOldUser) return true;
+                }
             }
 
             return true;
@@ -51,6 +57,7 @@ export const authOptions: NextAuthOptions = {
     ],
     pages: {
         error: "/error",
+        signIn: "/error",
     },
 };
 
