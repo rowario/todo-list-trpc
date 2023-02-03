@@ -59,7 +59,7 @@ export const telegram = router({
                 const reqUrl = ctx.req.headers["referer"];
                 const url = new URL(reqUrl || "http://localhost");
 
-                if (url.protocol === "https") {
+                if (url.protocol === "https:") {
                     ctx.res.setHeader(
                         "set-cookie",
                         `__Secure-next-auth.session-token=${session.sessionToken}; path=/; samesite=lax; httponly; secure=true; Expires=${date};`
