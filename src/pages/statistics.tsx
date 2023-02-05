@@ -18,9 +18,9 @@ const Statistics: FC = () => {
         },
     });
     const {
-        data: currentDay,
+        data: current,
         isLoading: isCurrentLoading,
-        refetch,
+        refetch: refetchCurrent,
     } = trpc.day.byDate.useQuery(
         { date },
         {
@@ -29,11 +29,14 @@ const Statistics: FC = () => {
     );
 
     useEffect(() => {
+        refetchCurrent();
+    }, [date]);
+
+    useEffect(() => {
         refetechAll();
-        refetch();
     }, []);
     if (isLoading || isCurrentLoading) return <CenteredLoader />;
-    if (!days || !currentDay)
+    if (!days || !current)
         return (
             <div style={{ textAlign: "center" }}>
                 У вас еще нет ни одного дня.
@@ -46,7 +49,7 @@ const Statistics: FC = () => {
                     {days.slice(-3).map((day) => (
                         <Button
                             onClick={() => setDate(day.date)}
-                            disabled={day.date == currentDay.date}
+                            disabled={day.date == current.date}
                         >
                             {day.date}
                         </Button>
@@ -54,9 +57,9 @@ const Statistics: FC = () => {
                 </Grid.Col>
                 <Grid.Col lg={6} md={6} sm={12} xs={12}>
                     <Paper withBorder p="sm">
-                        Статистика ({currentDay.date}):
+                        Статистика ({current.date}):
                         <br />
-                        <TodoList day={currentDay} disabled={true} />
+                        <TodoList day={current} disabled={true} />
                     </Paper>
                 </Grid.Col>
                 <Grid.Col lg={6} md={6} sm={12} xs={12}>
@@ -65,7 +68,7 @@ const Statistics: FC = () => {
                         <Textarea
                             sx={{ paddingTop: 4 }}
                             autosize
-                            value={currentDay.notes}
+                            value={current.notes}
                             disabled={true}
                         />
                     </Paper>
