@@ -1,5 +1,5 @@
-import { Header, Text, Avatar, Button, ActionIcon } from "@mantine/core";
-import { IconArrowBigRight, IconSettings } from "@tabler/icons-react";
+import { Header, Text, Avatar, ActionIcon } from "@mantine/core";
+import { IconArrowBigRight, IconChartLine, IconSettings } from "@tabler/icons-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 
@@ -33,6 +33,17 @@ const PageHeader = () => {
                         gap: 8,
                     }}
                 >
+                    <Link
+                        href="/statistics"
+                        style={{
+                            display: "flex",
+                            alignItems: "center",
+                        }}
+                    >
+                        <ActionIcon size="lg">
+                            <IconChartLine size={20} />
+                        </ActionIcon>
+                    </Link>
                     <Link
                         href="/settings"
                         style={{

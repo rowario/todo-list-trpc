@@ -9,6 +9,13 @@ export const day = router({
             where: {
                 userId: ctx.session.user.id,
             },
+            select: {
+                id: true,
+                date: true,
+            },
+            orderBy: {
+                createdAt: "asc",
+            },
         });
     }),
     last: userProcedure.query(async ({ ctx }) => {
@@ -34,6 +41,9 @@ export const day = router({
                 where: {
                     date: input.date,
                     userId: ctx.session.user.id,
+                },
+                include: {
+                    todos: true,
                 },
             });
             if (!day) {

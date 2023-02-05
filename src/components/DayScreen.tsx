@@ -49,7 +49,7 @@ const DayScreen = () => {
                     <div style={{ paddingTop: 4 }}>
                         <AddTodoForm dayId={day.id} />
                     </div>
-                    {day.date !== getCurrentDate() && (
+                    {day.date < getCurrentDate() && (
                         <div style={{ paddingTop: 8 }}>
                             <Button
                                 color="green"

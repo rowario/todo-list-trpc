@@ -6,7 +6,8 @@ import TodoItem from "./TodoItem";
 
 const TodoList: FC<{
     day: Day;
-}> = ({ day }) => {
+	disabled?: boolean;
+}> = ({ day, disabled = false}) => {
     const { data: todos, isLoading } = trpc.todo.allByDay.useQuery({
         dayId: day.id,
     });
@@ -18,7 +19,7 @@ const TodoList: FC<{
     return (
         <>
             {todos &&
-                todos.map((todo) => <TodoItem key={todo.id} todo={todo} />)}
+                todos.map((todo) => <TodoItem key={todo.id} todo={todo} disabled={disabled} />)}
             {(!todos || !todos.length) && "У вас нет задач."}
         </>
     );

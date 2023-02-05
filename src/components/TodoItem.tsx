@@ -5,7 +5,8 @@ import { trpc } from "@/utils/trpc";
 
 const TodoItem: FC<{
     todo: Todo;
-}> = ({ todo }) => {
+    disabled?: boolean;
+}> = ({ todo, disabled = false }) => {
     const utils = trpc.useContext();
     const { mutate: patchTodo } = trpc.todo.patch.useMutation({
         async onMutate({ id }) {
@@ -46,6 +47,7 @@ const TodoItem: FC<{
             }}
         >
             <Checkbox
+                disabled={disabled}
                 onChange={() => {
                     patchTodo({
                         ...todo,
@@ -55,13 +57,15 @@ const TodoItem: FC<{
                 label={todo.title}
                 checked={todo.completed}
             />
-            <CloseButton
-                size="sm"
-                onClick={() => {
-                    deleteTodo({ id: todo.id });
-                }}
-                aria-label="Delete todo"
-            />
+            {!disabled && (
+                <CloseButton
+                    size="sm"
+                    onClick={() => {
+                        deleteTodo({ id: todo.id });
+                    }}
+                    aria-label="Delete todo"
+                />
+            )}
         </div>
     );
 };
