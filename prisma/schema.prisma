@@ -12,25 +12,33 @@ datasource db {
 }
 
 model User {
-    id            String    @id @default(cuid())
+    id String @id @default(cuid())
+
     name          String?
     email         String?   @unique
     emailVerified DateTime?
     image         String?
-    days          Day[]     @relation("days")
-    todos         Todo[]
-    accounts      Account[]
-    sessions      Session[]
-    currentDay    Day?      @relation("current")
+
+    days       Day[]       @relation("days")
+    todos      Todo[]
+    dailyTodos DailyTodo[]
+
+    accounts   Account[]
+    sessions   Session[]
+    currentDay Day?      @relation("current")
 }
 
 model Day {
-    id             String  @id @default(cuid())
-    date           String
-    notes          String  @default("") @db.Text
-    user           User    @relation("days", fields: [userId], references: [id])
-    userId         String
-    todos          Todo[]
+    id String @id @default(cuid())
+
+    date  String
+    notes String @default("") @db.Text
+
+    todos Todo[]
+
+    user   User   @relation("days", fields: [userId], references: [id])
+    userId String
+
     currentDayUser User?   @relation("current", fields: [currentUserId], references: [id])
     currentUserId  String? @unique
 
@@ -39,31 +47,42 @@ model Day {
 }
 
 model Todo {
-    id        String  @id @default(cuid())
+    id String @id @default(cuid())
+
     title     String
     completed Boolean
-    user      User    @relation(fields: [userId], references: [id])
-    userId    String
-    day       Day     @relation(fields: [dayId], references: [id])
-    dayId     String
+
+    user   User   @relation(fields: [userId], references: [id])
+    userId String
+    day    Day    @relation(fields: [dayId], references: [id])
+    dayId  String
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
 
+model DailyTodo {
+    id String @id @default(cuid())
+
+    title String
+
+    user   User   @relation(fields: [userId], references: [id])
+    userId String
+}
+
 model Account {
-    id                  String  @id @default(cuid())
-    userId              String
-    type                String
-    provider            String
-    providerAccountId   String
-    refresh_token       String? @db.Text
-    access_token        String? @db.Text
-    expires_at          Int?
-    token_type          String?
-    scope               String?
-    id_token            String? @db.Text
-    session_state       String?
+    id                String  @id @default(cuid())
+    userId            String
+    type              String
+    provider          String
+    providerAccountId String
+    refresh_token     String? @db.Text
+    access_token      String? @db.Text
+    expires_at        Int?
+    token_type        String?
+    scope             String?
+    id_token          String? @db.Text
+    session_state     String?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
