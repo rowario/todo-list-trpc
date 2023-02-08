@@ -62,7 +62,7 @@ const Daily: FC = () => {
                         }}
                     >
                         Ежедневные задачи:
-						<br />
+                        <br />
                         {todos &&
                             todos.map((todo) => (
                                 <Group position="apart">
@@ -77,7 +77,7 @@ const Daily: FC = () => {
                                     </ActionIcon>
                                 </Group>
                             ))}
-						{!todos?.length && "У вас нет ежедневных задач."}
+                        {!todos?.length && "У вас нет ежедневных задач."}
                         <AddDailyTodoForm />
                     </Paper>
                 </Grid.Col>
