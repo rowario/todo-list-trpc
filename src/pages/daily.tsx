@@ -1,4 +1,8 @@
-import { Container, Grid, Paper } from "@mantine/core";
+import AddDailyTodoForm from "@/components/AddDailyTodoForm";
+import CenteredLoader from "@/components/CenteredLoader";
+import { trpc } from "@/utils/trpc";
+import { ActionIcon, Container, Grid, Group, Paper, Text } from "@mantine/core";
+import { IconX } from "@tabler/icons-react";
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
 import { FC } from "react";
@@ -19,6 +23,24 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 };
 
 const Daily: FC = () => {
+    const { data: todos, isLoading } = trpc.daily.all.useQuery();
+    const utils = trpc.useContext();
+    const { mutate: deleteDailyTodo } = trpc.daily.delete.useMutation({
+        async onMutate({ id }) {
+            await utils.daily.all.cancel();
+            const previous = utils.daily.all.getData();
+            if (!previous) {
+                return;
+            }
+            utils.daily.all.setData(
+                undefined,
+                previous.filter((x) => x.id !== id)
+            );
+        },
+    });
+
+    if (isLoading) return <CenteredLoader />;
+
     return (
         <Container>
             <Grid>
@@ -39,7 +61,24 @@ const Daily: FC = () => {
                             gap: 8,
                         }}
                     >
-                        Daily
+                        Ежедневные задачи:
+						<br />
+                        {todos &&
+                            todos.map((todo) => (
+                                <Group position="apart">
+                                    <Text>{todo.title}</Text>
+                                    <ActionIcon
+                                        onClick={() =>
+                                            deleteDailyTodo({ id: todo.id })
+                                        }
+                                        size="xs"
+                                    >
+                                        <IconX />
+                                    </ActionIcon>
+                                </Group>
+                            ))}
+						{!todos?.length && "У вас нет ежедневных задач."}
+                        <AddDailyTodoForm />
                     </Paper>
                 </Grid.Col>
             </Grid>

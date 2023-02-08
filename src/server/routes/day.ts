@@ -80,10 +80,22 @@ export const day = router({
         if (checked) {
             throw new TRPCError({ code: "CONFLICT" });
         }
+        const dailyTodos = await ctx.prisma.dailyTodo.findMany({
+            where: {
+                userId: ctx.session.user.id,
+            },
+        });
         const created = await ctx.prisma.day.create({
             data: {
                 date,
                 userId: ctx.session.user.id,
+                todos: {
+                    create: dailyTodos.map((todo) => ({
+                        title: todo.title,
+                        completed: false,
+                        userId: ctx.session.user.id,
+                    })),
+                },
             },
         });
         await ctx.prisma.user.update({
