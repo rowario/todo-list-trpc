@@ -2,6 +2,7 @@ import AddDailyTodoForm from "@/components/AddDailyTodoForm";
 import CenteredLoader from "@/components/CenteredLoader";
 import { trpc } from "@/utils/trpc";
 import { ActionIcon, Container, Grid, Group, Paper, Text } from "@mantine/core";
+import { DailyTodo } from "@prisma/client";
 import { IconX } from "@tabler/icons-react";
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
@@ -34,7 +35,7 @@ const Daily: FC = () => {
             }
             utils.daily.all.setData(
                 undefined,
-                previous.filter((x) => x.id !== id)
+                previous.filter((x: DailyTodo) => x.id !== id)
             );
         },
     });
